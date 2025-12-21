@@ -11,9 +11,12 @@ import com.sky.entity.Category;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.CategoryMapper;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.mapper.SetMealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import com.sky.service.EmployeeService;
@@ -32,6 +35,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+    
+    @Autowired
+    private DishMapper dishMapper;
+    
+    @Autowired
+    private SetMealMapper setMealMapper;
 
 
     /**
@@ -70,6 +79,23 @@ public class CategoryServiceImpl implements CategoryService {
      * @param id
      */
     public void delete(Long id) {
+        //查询当前分类是否关联了菜品
+        Integer dishCount = dishMapper.countByCategoryId(id);
+        //查询当前分类是否关联了套餐
+        Integer setMealCount = setMealMapper.countByCategoryId(id);
+        
+        //判断是否有关联菜品或套餐
+        if (dishCount > 0) {
+            //当前分类下有菜品，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+        }
+        
+        if (setMealCount > 0) {
+            //当前分类下有套餐，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+        }
+        
+        //删除分类
         categoryMapper.delete(id);
     }
 
@@ -103,5 +129,4 @@ public class CategoryServiceImpl implements CategoryService {
                 build();
         categoryMapper.update(category);
     }
-
 }
