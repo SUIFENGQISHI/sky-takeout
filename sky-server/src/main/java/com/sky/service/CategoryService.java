@@ -17,4 +17,19 @@ public interface CategoryService {
      * @param categoryDTO
      */
     void save(CategoryDTO categoryDTO);
+
+    /**
+     * 分类删除
+     * @param id
+     */
+    void delete(Long id);
+
+    /**
+     * 分类启用禁用
+     * @param status
+     * @param id
+     */
+    void startOrStop(Integer status, Long id);
+
+    void update(CategoryDTO categoryDTO);
 }

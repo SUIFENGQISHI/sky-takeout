@@ -58,4 +58,40 @@ public class CategoryController {
         return Result.success();
 
     }
+
+    /**
+     * 删除分类
+     * @param id
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("删除分类")
+    public Result deleteById(@RequestParam Long id) {
+        log.info("删除分类：{}",id);
+        categoryService.delete(id);
+        return Result.success();
+    }
+
+    /**
+     * 启用禁用分类
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用分类")
+    public Result startOrStop(@PathVariable Integer status,@RequestParam Long id){
+        log.info("启用禁用分类-status:{},id:{}",status,id);
+        categoryService.startOrStop(status,id);
+        return Result.success();
+    }
+
+
+    @PutMapping
+    @ApiOperation("修改分类")
+    public Result update(@RequestBody CategoryDTO categoryDTO) {
+        log.info("修改分类：{}",categoryDTO);
+        categoryService.update(categoryDTO);
+        return Result.success();
+    }
 }
