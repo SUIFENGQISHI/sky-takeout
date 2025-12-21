@@ -9,9 +9,20 @@ spring:
   datasource:
     druid:
       driver-class-name: ${sky.datasource.driver-class-name}
-      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true&tinyInt1isBit=false&yearIsDateType=false&useInformationSchema=true&connectionCollation=utf8mb4_unicode_ci
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      validation-query-timeout: 3000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      max-evictable-idle-time-millis: 400000
 
 mybatis:
   #mapper配置文件
@@ -20,6 +31,13 @@ mybatis:
   configuration:
     #开启驼峰命名
     map-underscore-to-camel-case: true
+    #解决status字段问题
+    safe-row-bounds-enabled: true
+    safe-result-handler-enabled: true
+    default-statement-timeout: 30
+    # MySQL 5.7.44优化配置
+    use-generated-keys: true
+    use-column-label: true
 
 logging:
   level:
@@ -34,6 +52,6 @@ sky:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: itcast
     # 设置jwt过期时间
-    admin-ttl: 7200000
+    admin-ttl: 7200000000000000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
