@@ -6,10 +6,7 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.CategoryPageQueryDTO;
-import com.sky.dto.EmployeeDTO;
-import com.sky.dto.EmployeeLoginDTO;
-import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.*;
 import com.sky.entity.Category;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
@@ -49,5 +46,24 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> records = page.getResult();
         return new PageResult(total, records);
     }
+    /**
+     * 新增分类
+     * @param categoryDTO
+     */
+    public void save(CategoryDTO categoryDTO){
+        Category category = Category.builder().
+                type(categoryDTO.getType()).
+                name(categoryDTO.getName()).
+                sort(categoryDTO.getSort()).
+                status(StatusConstant.ENABLE).
+                createTime(LocalDateTime.now()).
+                updateTime(LocalDateTime.now()).
+                createUser(BaseContext.getCurrentId()).
+                updateUser(BaseContext.getCurrentId()).
+                build();
+
+        categoryMapper.insert(category);
+    }
+
 
 }

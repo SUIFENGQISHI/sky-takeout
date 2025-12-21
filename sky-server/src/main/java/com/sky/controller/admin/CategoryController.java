@@ -1,10 +1,7 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
-import com.sky.dto.CategoryPageQueryDTO;
-import com.sky.dto.EmployeeDTO;
-import com.sky.dto.EmployeeLoginDTO;
-import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.*;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -48,5 +45,17 @@ public class CategoryController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 新增分类
+     * @param categoryDTO
+     * @return
+     */
+    @PostMapping
+    @ApiOperation("新增分类")
+    public Result save(@RequestBody CategoryDTO categoryDTO) {
+        log.info("新增分类：{}",categoryDTO);
+        categoryService.save(categoryDTO);
+        return Result.success();
 
+    }
 }
