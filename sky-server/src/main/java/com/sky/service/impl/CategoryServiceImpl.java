@@ -110,7 +110,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.update(category);
     }
     /**
-     * 分类禁用/启用
+     * 分禁用/启用
      * @param status
      * @param id
      */
@@ -122,5 +122,14 @@ public class CategoryServiceImpl implements CategoryService {
                 updateUser(BaseContext.getCurrentId()).
                 build();
         categoryMapper.update(category);
+    }
+
+    /**
+     * 根据类型查询分类
+     * @param type
+     * @return
+     */
+    public List<Category> listByType(Integer type) {
+        return categoryMapper.listByType(type);
     }
 }

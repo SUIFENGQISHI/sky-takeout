@@ -2,8 +2,12 @@
 package com.sky.service;
 
 import com.sky.dto.*;
+import com.sky.entity.Category;
 import com.sky.entity.Employee;
 import com.sky.result.PageResult;
+
+import java.util.List;
+
 public interface CategoryService {
     /**
      * 分类分页查询
@@ -32,4 +36,11 @@ public interface CategoryService {
     void startOrStop(Integer status, Long id);
 
     void update(CategoryDTO categoryDTO);
+
+    /**
+     * 根据类型查询分类
+     * @param type
+     * @return
+     */
+    List<Category> listByType(Integer type);
 }
