@@ -54,6 +54,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .title("苍穹外卖项目接口文档")
                 .version("2.0")
                 .description("苍穹外卖项目接口文档")
+                .contact(new springfox.documentation.service.Contact("随风起誓", "https://example.com", "author@example.com"))
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
