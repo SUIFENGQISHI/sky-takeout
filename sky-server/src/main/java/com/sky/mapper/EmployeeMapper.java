@@ -34,6 +34,7 @@ public interface EmployeeMapper {
 
     /**
      * 员工分页查询
+     *
      * @param employeePageQueryDTO
      * @return
      */
@@ -41,6 +42,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据id动态修改数据
+     *
      * @param employee
      * @return
      */
@@ -49,6 +51,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据id查询员工信息
+     *
      * @param id
      * @return
      */

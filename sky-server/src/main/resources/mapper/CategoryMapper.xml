@@ -20,7 +20,6 @@
         FROM category
         WHERE id = #{id}
     </delete>
-
     <update id="update" parameterType="com.sky.entity.Category">
         UPDATE category
         <set>
