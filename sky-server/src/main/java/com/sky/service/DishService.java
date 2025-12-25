@@ -5,8 +5,14 @@ import com.sky.dto.DishPageQueryDTO;
 import com.sky.result.PageResult;
 import io.swagger.annotations.Api;
 
+import java.util.List;
+
 
 public interface DishService {
     Long saveWithFlavors(DishDTO dishDTO);
+
     PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
+
+    void deleteBatch(List<Long> ids);
+
 }
