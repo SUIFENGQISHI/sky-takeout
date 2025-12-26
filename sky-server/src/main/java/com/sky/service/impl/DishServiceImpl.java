@@ -43,7 +43,6 @@ public class DishServiceImpl implements DishService {
     private SetmealDishMapper setmealDishMapper;
 
 
-
     /**
      * 新增菜品
      *
@@ -108,12 +107,13 @@ public class DishServiceImpl implements DishService {
         dishMapper.deleteBatchByIds(ids);
         dishFlavorMapper.deleteBatchByIds(ids);
     }
+
     /**
      * 通过ID查询菜品信息
      */
     public DishVO getEchoById(Long id) {
         //获取菜品信息，和关联的分类名称
-        DishVO dishVO =dishMapper.getEchoById(id);
+        DishVO dishVO = dishMapper.getEchoById(id);
         //获取关联的口味信息
         List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
         dishVO.setFlavors(dishFlavors);
@@ -123,6 +123,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 修改菜品
+     *
      * @param dishDTO
      * @return
      */
@@ -142,5 +143,14 @@ public class DishServiceImpl implements DishService {
             });
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
+
+    /**
+     * 根据分类获取菜品数据
+     */
+    public List<Dish> getDishListById(Long categoryId) {
+        log.info("根据分类id查询菜品：{}", categoryId);
+        List<Dish> dishList = dishMapper.getDishListById(categoryId);
+        return dishList;
     }
 }
