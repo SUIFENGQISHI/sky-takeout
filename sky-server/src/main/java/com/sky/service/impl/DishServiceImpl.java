@@ -17,6 +17,7 @@ import com.sky.mapper.SetMealMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +107,16 @@ public class DishServiceImpl implements DishService {
         //批量删除菜品,并删除相关联的口味
         dishMapper.deleteBatchByIds(ids);
         dishFlavorMapper.deleteBatchByIds(ids);
-
+    }
+    /**
+     * 通过ID查询菜品信息
+     */
+    public DishVO getEchoById(Long id) {
+        //获取菜品信息，和关联的分类名称
+        DishVO dishVO =dishMapper.getEchoById(id);
+        //获取关联的口味信息
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+        dishVO.setFlavors(dishFlavors);
+        return dishVO;
     }
 }
