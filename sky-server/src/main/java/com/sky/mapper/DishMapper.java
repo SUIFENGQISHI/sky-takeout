@@ -55,4 +55,7 @@ public interface DishMapper {
 
 
     DishVO getEchoById(Long id);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Dish dish);
 }

@@ -4,7 +4,7 @@
 <mapper namespace="com.sky.mapper.DishFlavorMapper">
     <insert id="insertBatch" parameterType="com.sky.entity.DishFlavor" >
         insert into dish_flavor (dish_id, name, value) values
-        <foreach collection="list" item="item" separator=",">
+        <foreach collection="dishFlavors" item="item" separator=",">
             (#{item.dishId}, #{item.name}, #{item.value})
         </foreach>
     </insert>
