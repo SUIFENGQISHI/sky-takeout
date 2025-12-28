@@ -11,6 +11,7 @@ import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.enumeration.OperationType;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.exception.StartDishNotAllowException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetMealMapper;
@@ -18,6 +19,7 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
+import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,6 +44,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private SetMealMapper setMealMapper;
 
 
     /**
@@ -152,6 +157,29 @@ public class DishServiceImpl implements DishService {
         log.info("根据分类id查询菜品：{}", categoryId);
         List<Dish> dishList = dishMapper.getDishListById(categoryId);
         return dishList;
+    }
+
+    public void startOrStop(Integer status, Long id) {
+        //若菜品相关联的套餐处于起售状态，则不能停售
+        if (status == 0) {
+            List<Long> ids = new ArrayList<>();
+            ids.add(id);
+            List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);
+            if (setmealIds != null && setmealIds.size() > 0) {
+                for (Long setmealId : setmealIds) {
+                    SetmealVO setmeal = setMealMapper.getByIdWithCategoryName(setmealId);
+                    Integer setmealStatus = setmeal.getStatus();
+                    if (setmealStatus == 1) {
+                        throw new StartDishNotAllowException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL_ON_SALE);
+                    }
+                }
+            }
+        }
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+        dishMapper.update(dish);
     }
 }
 
