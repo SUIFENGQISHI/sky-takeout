@@ -10,6 +10,7 @@ import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface SetMealMapper {
@@ -30,5 +31,17 @@ public interface SetMealMapper {
     @AutoFill(value = OperationType.INSERT)
     void insert(Setmeal setmeal);
 
+    /**
+     * 根据id查询套餐数据
+     * @param id
+     * @return
+     */
     SetmealVO getByIdWithCategoryName(Long id);
+
+    /**
+     * 更新套餐数据
+     * @param setmeal
+     */
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }

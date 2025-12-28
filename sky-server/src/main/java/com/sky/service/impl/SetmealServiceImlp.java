@@ -2,10 +2,12 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.annotation.AutoFill;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.enumeration.OperationType;
 import com.sky.mapper.SetMealMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,6 +65,12 @@ public class SetmealServiceImlp implements SetmealService {
         setmealDishMapper.insertBatch(setmealDishList);
     }
 
+
+    /**
+     * 根据id查询套餐和关联的菜品数据
+     * @param id
+     * @return
+     */
     @Override
     public SetmealVO getById(Long id) {
         //查询套餐信息和分类名称
@@ -73,9 +82,26 @@ public class SetmealServiceImlp implements SetmealService {
         return setmealVO;
     }
 
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     */
+    @Transactional
     @Override
     public void update(SetmealDTO setmealDTO) {
+        log.info("修改套餐：{}",setmealDTO);
+        //更新套餐信息
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        setmealMapper.update(setmeal);
 
+        //批量删除套餐关联菜品数据
+        setmealDishMapper.deleteBySetmealId(setmealDTO.getId());
+
+        //批量插入新的套餐关联菜品数据
+        List<SetmealDish> setmealDishList=setmealDTO.getSetmealDishes();
+        setmealDishList.forEach(setmealDish->setmealDish.setSetmealId(setmealDTO.getId()));
+        setmealDishMapper.insertBatch(setmealDTO.getSetmealDishes());
     }
 
 
