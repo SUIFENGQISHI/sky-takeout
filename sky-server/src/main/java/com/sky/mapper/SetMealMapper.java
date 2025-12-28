@@ -29,4 +29,6 @@ public interface SetMealMapper {
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Setmeal setmeal);
+
+    SetmealVO getByIdWithCategoryName(Long id);
 }

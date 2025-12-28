@@ -62,6 +62,21 @@ public class SetmealServiceImlp implements SetmealService {
         setmealDishMapper.insertBatch(setmealDishList);
     }
 
+    @Override
+    public SetmealVO getById(Long id) {
+        //查询套餐信息和分类名称
+        SetmealVO setmealVO = setmealMapper.getByIdWithCategoryName(id);
+
+        //查询关联菜品
+        List<SetmealDish> setmealDishList=setmealDishMapper.getSetmealDishBySetmealId(id);
+        setmealVO.setSetmealDishes(setmealDishList);
+        return setmealVO;
+    }
+
+    @Override
+    public void update(SetmealDTO setmealDTO) {
+
+    }
 
 
 }
