@@ -2,16 +2,15 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.sky.annotation.AutoFill;
+import com.sky.constant.MessageConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
-import com.sky.enumeration.OperationType;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.SetMealMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
-public class SetmealServiceImlp implements SetmealService {
+public class SetmealServiceImpl implements SetmealService {
 
 
 
@@ -102,6 +100,25 @@ public class SetmealServiceImlp implements SetmealService {
         List<SetmealDish> setmealDishList=setmealDTO.getSetmealDishes();
         setmealDishList.forEach(setmealDish->setmealDish.setSetmealId(setmealDTO.getId()));
         setmealDishMapper.insertBatch(setmealDTO.getSetmealDishes());
+    }
+
+    @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        //判断当前套餐是否在售
+        for (Long id : ids) {
+            SetmealVO setmeal = setmealMapper.getByIdWithCategoryName(id);
+            if (setmeal.getStatus() == 1) {
+                //在售，不能删除
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            }
+        }
+        //删除套餐信息
+        setmealMapper.deleteBatchByIds(ids);
+
+        //删除关联菜品信息
+        setmealDishMapper.deleteBatchByIds(ids);
+
     }
 
 
