@@ -11,7 +11,7 @@ import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.enumeration.OperationType;
 import com.sky.exception.DeletionNotAllowedException;
-import com.sky.exception.StartDishNotAllowException;
+import com.sky.exception.StopDishNotAllowException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetMealMapper;
@@ -170,7 +170,7 @@ public class DishServiceImpl implements DishService {
                     SetmealVO setmeal = setMealMapper.getByIdWithCategoryName(setmealId);
                     Integer setmealStatus = setmeal.getStatus();
                     if (setmealStatus == 1) {
-                        throw new StartDishNotAllowException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL_ON_SALE);
+                        throw new StopDishNotAllowException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL_ON_SALE);
                     }
                 }
             }

@@ -39,4 +39,6 @@ public interface SetmealService {
      * @param ids
      */
     void deleteBatch(List<Long> ids);
+
+    void startOrStop(Integer status, Long id);
 }
