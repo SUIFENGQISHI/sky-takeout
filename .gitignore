@@ -49,3 +49,7 @@ Thumbs.db
 
 # Compiled class file #
 *.class
+
+# Sensitive configuration files #
+**/application-dev.yml
+application-dev.yml
