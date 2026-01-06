@@ -7,6 +7,7 @@ import com.sky.service.ShoppingCartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +46,13 @@ public class ShoppingCartController {
         log.info("查看购物车");
         List<ShoppingCart> list=shoppingCartService.list();
         return Result.success(list);
+    }
+
+
+    @PostMapping("/sub")
+    public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO){
+        log.info("删除:{}",shoppingCartDTO);
+        shoppingCartService.sub(shoppingCartDTO);
+        return Result.success();
     }
 }
