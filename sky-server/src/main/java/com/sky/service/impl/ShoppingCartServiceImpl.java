@@ -112,4 +112,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
 
     }
+
+    public void clean() {
+        shoppingCartMapper.deleteAll();
+    }
 }
