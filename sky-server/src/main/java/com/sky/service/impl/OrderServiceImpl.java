@@ -48,7 +48,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserMapper userMapper;
 
-    private Orders orders;
 
     /**
      * 用户下单
@@ -84,7 +83,6 @@ public class OrderServiceImpl implements OrderService {
         orders.setUserId(BaseContext.getCurrentId());
         orders.setUserName(addressBook.getConsignee());
         orders.setConsignee(addressBook.getConsignee());
-        this.orders = orders;
         orderMapper.insert(orders);
         //获取新插入的订单的id
         Long orderId = orders.getId();
@@ -114,13 +112,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单支付
+     *
      * @param ordersPaymentDTO
      * @return
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 当前登录用户id
-        Long userId = BaseContext.getCurrentId();
-        User user = userMapper.getById(userId);
+//        Long userId = BaseContext.getCurrentId();
+//        User user = userMapper.getById(userId);
 /*        //调用微信支付接口，生成预支付交易单
         JSONObject jsonObject = weChatPayUtil.pay(
                 ordersPaymentDTO.getOrderNumber(), //商户订单号
@@ -134,13 +133,14 @@ public class OrderServiceImpl implements OrderService {
         }
 */
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code","ORDERPAID");
+        jsonObject.put("code", "ORDERPAID");
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
         Integer OrderPaidStatus = Orders.PAID;//支付状态，已支付
         Integer OrderStatus = Orders.TO_BE_CONFIRMED;  //订单状态，待接单
         LocalDateTime check_out_time = LocalDateTime.now();//更新支付时间
-        orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, this.orders.getId());
+        String orderNumber=ordersPaymentDTO.getOrderNumber();
+        orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderNumber);
         return vo;
     }
 
@@ -175,20 +175,58 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("订单分页查询：{}", ordersPageQueryDTO);
-
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        Page<Orders> page= orderMapper.pageQuery(ordersPageQueryDTO);
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
         Long total = page.getTotal();
         List<Orders> records = page.getResult();
         List<OrderVO> list = new ArrayList<>();
-        for(Orders order : records){
+        for (Orders order : records) {
             OrderVO orderVO = new OrderVO();
-            BeanUtils.copyProperties(order,orderVO);
+            BeanUtils.copyProperties(order, orderVO);
             orderVO.setOrderDetailList(orderDetailMapper.getByOrderId(order.getId()));
             list.add(orderVO);  // 添加到列表中
         }
 
         return new PageResult(total, list);  // 返回封装后的分页结果
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderVO getOrderById(Long id) {
+        Orders orders = orderMapper.getByid(id);
+        OrderVO orderVO = new OrderVO();
+        BeanUtils.copyProperties(orders, orderVO);
+        orderVO.setOrderDetailList(orderDetailMapper.getByOrderId(id));
+        return orderVO;
+    }
+
+    /**
+     * 订单取消
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public void cancelOrder(Long id) {
+        //判断当前订单的订单状态，仅待接单和待付款的订单允许取消
+        Orders orders = orderMapper.getByid(id);
+        if(orders.getStatus() != Orders.TO_BE_CONFIRMED && orders.getStatus() != Orders.PENDING_PAYMENT){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //若允许取消，修改订单状态为已取消，修改订单取消时间。
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orders.setCancelReason("用户取消订单");
+        orderMapper.update(orders);
+
+
+
     }
 
 }

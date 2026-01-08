@@ -19,6 +19,18 @@ public interface OrderDetailMapper {
     void insertBatch(List<OrderDetail> orderDetailsList);
 
 
+    /**
+     * 根据订单id查询订单明细
+     * @param id
+     * @return
+     */
     @Select("select * from order_detail where order_id = #{id}")
     List<OrderDetail> getByOrderId(Long id);
+
+    /**
+     * 根据id删除订单数据
+     * @param id
+     */
+    @Select("delete from order_detail where order_id = #{id}")
+    void deleteById(Long id);
 }
