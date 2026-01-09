@@ -66,4 +66,16 @@ public interface OrderService {
     OrderStatisticsVO statistics();
 
     void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    void deliveryOrder(Long id);
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    void completeOrder(Long id);
 }

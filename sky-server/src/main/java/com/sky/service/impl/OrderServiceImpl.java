@@ -330,4 +330,43 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateStatusById(ordersConfirmDTO.getId(), ordersConfirmDTO.getStatus());
     }
 
+    /**
+     * 派送订单
+     * @param id
+     */
+    @Override
+    public void deliveryOrder(Long id) {
+        // 查询订单
+        Orders orders = orderMapper.getByid(id);
+        
+        // 判断订单状态，只有待派送（已接单）的订单才能派送
+        if (orders == null || !orders.getStatus().equals(Orders.CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        
+        // 修改订单状态为派送中
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    @Override
+    public void completeOrder(Long id) {
+        // 查询订单
+        Orders orders = orderMapper.getByid(id);
+        
+        // 判断订单状态，只有派送中的订单才能完成
+        if (orders == null || !orders.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        
+        // 修改订单状态为已完成，设置送达时间
+        orders.setStatus(Orders.COMPLETED);
+        orders.setDeliveryTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
 }
