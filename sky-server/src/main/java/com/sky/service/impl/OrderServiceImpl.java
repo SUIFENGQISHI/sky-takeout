@@ -214,7 +214,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public void cancelOrder(Long id) {
+    public void cancelOrder(Long id, String cancelReason) {
         //判断当前订单的订单状态，仅待接单和待付款的订单允许取消
         Orders orders = orderMapper.getByid(id);
         if (orders.getStatus() != Orders.TO_BE_CONFIRMED && orders.getStatus() != Orders.PENDING_PAYMENT) {
@@ -224,7 +224,7 @@ public class OrderServiceImpl implements OrderService {
         //若允许取消，修改订单状态为已取消，修改订单取消时间。
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
-        orders.setCancelReason("用户取消订单");
+        orders.setCancelReason(cancelReason == null ? "用户取消" : cancelReason);
         orderMapper.update(orders);
 
     }

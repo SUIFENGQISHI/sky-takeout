@@ -43,7 +43,7 @@ public interface OrderService {
      * @param id
      * @return
      */
-    void cancelOrder(Long id);
+    void cancelOrder(Long id,String cancelReason);
 
     /**
      * 再来一单
