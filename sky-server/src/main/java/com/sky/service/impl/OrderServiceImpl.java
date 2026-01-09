@@ -140,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
         Integer OrderPaidStatus = Orders.PAID;//支付状态，已支付
         Integer OrderStatus = Orders.TO_BE_CONFIRMED;  //订单状态，待接单
         LocalDateTime check_out_time = LocalDateTime.now();//更新支付时间
-        String orderNumber=ordersPaymentDTO.getOrderNumber();
+        String orderNumber = ordersPaymentDTO.getOrderNumber();
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderNumber);
         return vo;
     }
@@ -216,7 +216,7 @@ public class OrderServiceImpl implements OrderService {
     public void cancelOrder(Long id) {
         //判断当前订单的订单状态，仅待接单和待付款的订单允许取消
         Orders orders = orderMapper.getByid(id);
-        if(orders.getStatus() != Orders.TO_BE_CONFIRMED && orders.getStatus() != Orders.PENDING_PAYMENT){
+        if (orders.getStatus() != Orders.TO_BE_CONFIRMED && orders.getStatus() != Orders.PENDING_PAYMENT) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
@@ -228,6 +228,11 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    /**
+     * 再来一单
+     *
+     * @param id
+     */
     @Override
     public void repetition(Long id) {
         // 1. 根据订单id查询原订单
@@ -267,6 +272,32 @@ public class OrderServiceImpl implements OrderService {
 
         // 7. 批量插入新订单明细
         orderDetailMapper.insertBatch(newOrderDetails);
+    }
+
+    /**
+     * 订单搜索接口
+     *
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //分页查询并取出订单列表
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+        List<Orders> ordersList = page.getResult();
+        //封装VO列表
+        List<OrderVO> orderVOList = ordersList.stream().map(order -> {
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(order, orderVO);
+            Long orderId = order.getId();
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderId);
+            List<String> nameAndNumList = orderDetailList.stream().map(detail -> detail.getName() + "*" + detail.getNumber()).collect(Collectors.toList());
+            String orderDetail = String.join(",", nameAndNumList);
+            orderVO.setOrderDetail(orderDetail);
+            return orderVO;
+        }).collect(Collectors.toList());
+        return new PageResult(page.getTotal(), orderVOList);
     }
 
 }
