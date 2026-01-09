@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
@@ -77,12 +78,21 @@ public class OrderController {
         log.info("取消订单：{}", ordersCancelDTO);
         Long id=ordersCancelDTO.getId();
         String cancelReason=ordersCancelDTO.getCancelReason();
-        orderService.cancelOrder(id, cancelReason);
+        orderService.rejectOrCancelOrder(id, cancelReason);
         return Result.success();
     }
 
     /**
      * 拒单
      */
+    @PutMapping("/rejection")
+    @ApiOperation("拒单")
+    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) throws Exception {
+        log.info("拒单：{}", ordersRejectionDTO);
+        Long id=ordersRejectionDTO.getId();
+        String rejectionReason=ordersRejectionDTO.getRejectionReason();
+        orderService.rejectOrCancelOrder(id,rejectionReason);
+        return Result.success();
+    }
 
 }
