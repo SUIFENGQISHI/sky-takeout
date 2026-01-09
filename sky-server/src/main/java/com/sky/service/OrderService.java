@@ -23,9 +23,30 @@ public interface OrderService {
      */
     void paySuccess(String outTradeNo);
 
+    /**
+     * 历史订单查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
     PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
+    /**
+     * 订单详情查询
+     * @param id
+     * @return
+     */
     OrderVO getOrderById(Long id);
 
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
     void cancelOrder(Long id);
+
+    /**
+     * 再来一单
+     * @param id
+     */
+    void repetition(Long id);
 }

@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -225,8 +226,47 @@ public class OrderServiceImpl implements OrderService {
         orders.setCancelReason("用户取消订单");
         orderMapper.update(orders);
 
+    }
 
+    @Override
+    public void repetition(Long id) {
+        // 1. 根据订单id查询原订单
+        Orders oldOrder = orderMapper.getByid(id);
 
+        // 2. 创建新订单，复制原订单数据
+        Orders newOrder = new Orders();
+        BeanUtils.copyProperties(oldOrder, newOrder);
+
+        // 3. 修改新订单的关键字段
+        newOrder.setId(null); // 清空id，让数据库自动生成
+        newOrder.setNumber(String.valueOf(System.currentTimeMillis())); // 生成新订单号
+        newOrder.setStatus(Orders.PENDING_PAYMENT); // 订单状态：待付款
+        newOrder.setPayStatus(Orders.UN_PAID); // 支付状态：未支付
+        newOrder.setOrderTime(LocalDateTime.now()); // 下单时间：当前时间
+        newOrder.setCheckoutTime(null); // 清空结账时间
+        newOrder.setEstimatedDeliveryTime(LocalDateTime.now().plusHours(1)); // 预计送达时间：1小时后
+        newOrder.setCancelReason(null); // 清空取消原因
+        newOrder.setCancelTime(null); // 清空取消时间
+        newOrder.setRejectionReason(null); // 清空拒绝原因
+        newOrder.setDeliveryTime(null); // 清空送达时间
+
+        // 4. 插入新订单
+        orderMapper.insert(newOrder);
+
+        // 5. 查询原订单的订单明细
+        List<OrderDetail> oldOrderDetails = orderDetailMapper.getByOrderId(id);
+
+        // 6. 复制订单明细并关联到新订单
+        List<OrderDetail> newOrderDetails = oldOrderDetails.stream().map(oldDetail -> {
+            OrderDetail newDetail = new OrderDetail();
+            BeanUtils.copyProperties(oldDetail, newDetail);
+            newDetail.setId(null); // 清空id
+            newDetail.setOrderId(newOrder.getId()); // 关联新订单id
+            return newDetail;
+        }).collect(Collectors.toList());
+
+        // 7. 批量插入新订单明细
+        orderDetailMapper.insertBatch(newOrderDetails);
     }
 
 }
