@@ -17,6 +17,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
@@ -298,6 +299,19 @@ public class OrderServiceImpl implements OrderService {
             return orderVO;
         }).collect(Collectors.toList());
         return new PageResult(page.getTotal(), orderVOList);
+    }
+
+    @Override
+    public OrderStatisticsVO statistics() {
+        Integer confirmed = orderMapper.countStatus(Orders.CONFIRMED);
+        Integer deliveryInProgress = orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
+        Integer toBeConfirmed = orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
+        OrderStatisticsVO orderStatisticsVO=OrderStatisticsVO.builder()
+                .toBeConfirmed(toBeConfirmed)
+                .confirmed(confirmed)
+                .deliveryInProgress(deliveryInProgress)
+                .build();
+        return orderStatisticsVO;
     }
 
 }
