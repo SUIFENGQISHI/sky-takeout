@@ -63,6 +63,19 @@ public interface OrderMapper {
     @Delete("delete from orders where id = #{id}")
     void deleteById(Long id);
 
+    /**
+     * 统计订单数量
+     * @param status
+     * @return
+     */
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer status);
+
+    /**
+     * 修改订单状态
+     * @param id
+     * @param status
+     */
+    @Update("update orders set status = #{status} where id = #{id}")
+    void updateStatusById(Long id, Integer status);
 }
