@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -21,6 +22,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.Address;
 import org.springframework.beans.BeanUtils;
@@ -32,7 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +54,8 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
 
     /**
@@ -144,6 +150,13 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime check_out_time = LocalDateTime.now();//更新支付时间
         String orderNumber = ordersPaymentDTO.getOrderNumber();
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderNumber);
+        //向商家发送订单消息
+        Map map = new HashMap();
+        map.put("type",1);
+        map.put("orderId",orderMapper.getByNumber(orderNumber).getId());
+        map.put("content","订单号："+orderNumber+orderNumber);
+        String json= JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
         return vo;
     }
 
@@ -167,6 +180,9 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+
+
     }
 
     /**
@@ -311,6 +327,10 @@ public class OrderServiceImpl implements OrderService {
         return new PageResult(page.getTotal(), orderVOList);
     }
 
+    /**
+     * 订单统计接口
+     * @return
+     */
     @Override
     public OrderStatisticsVO statistics() {
         Integer confirmed = orderMapper.countStatus(Orders.CONFIRMED);
@@ -324,6 +344,10 @@ public class OrderServiceImpl implements OrderService {
         return orderStatisticsVO;
     }
 
+    /**
+     * 接单
+     * @param ordersConfirmDTO
+     */
     @Override
     public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO) {
         ordersConfirmDTO.setStatus(Orders.CONFIRMED);
