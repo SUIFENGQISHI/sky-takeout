@@ -393,4 +393,17 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    /**
+     * 催单
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        Map map = new HashMap();
+        map.put("type",2);
+        map.put("orderId",id);
+        map.put("content","订单号："+orderMapper.getByid(id).getNumber()+"催单，请尽快接单！");
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
+
 }
