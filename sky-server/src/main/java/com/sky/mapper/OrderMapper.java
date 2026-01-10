@@ -4,8 +4,10 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.*;
+import org.springframework.core.annotation.Order;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface OrderMapper {
@@ -78,4 +80,7 @@ public interface OrderMapper {
      */
     @Update("update orders set status = #{status} where id = #{id}")
     void updateStatusById(Long id, Integer status);
+
+    @Select("select * from orders where status = #{status} and order_time < #{lastTime}")
+    List<Orders> getByStatusAndTime(Integer status, LocalDateTime lastTime);
 }
