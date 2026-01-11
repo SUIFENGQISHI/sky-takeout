@@ -30,6 +30,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 营业额统计
+     *
      * @param begin
      * @param end
      * @return
@@ -52,11 +53,15 @@ public class ReportServiceImpl implements ReportService {
         }
         String dateListStr = StringUtils.join(dateList, ",");
         String turnoverListStr = StringUtils.join(turnoverList, ",");
-        return new TurnoverReportVO(dateListStr, turnoverListStr);
+        return TurnoverReportVO.builder()
+                .dateList(dateListStr)
+                .turnoverList(turnoverListStr)
+                .build();
     }
 
     /**
      * 用户统计
+     *
      * @param begin
      * @param end
      * @return
@@ -92,6 +97,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 订单统计
+     *
      * @param begin
      * @param end
      * @return
@@ -139,6 +145,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 销量Top10统计
+     *
      * @param begin
      * @param end
      * @return

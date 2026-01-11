@@ -81,6 +81,11 @@ public interface OrderMapper {
     @Update("update orders set status = #{status} where id = #{id}")
     void updateStatusById(Long id, Integer status);
 
+    /**
+     * 批量查询订单
+     * @param status
+     * @return
+     */
     @Select("select * from orders where status = #{status} and order_time < #{lastTime}")
     List<Orders> getByStatusAndTime(Integer status, LocalDateTime lastTime);
 }
