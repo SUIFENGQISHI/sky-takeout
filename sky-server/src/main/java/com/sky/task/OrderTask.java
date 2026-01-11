@@ -23,7 +23,7 @@ public class OrderTask {
     /**
      * 处理订单状态超时
      */
-    @Scheduled(cron = "0 * * * * ? ")
+//    @Scheduled(cron = "0 * * * * ? ")
     public void handleWithOrderTimeOut() {
         log.info("定时处理超时订单：{}", LocalDateTime.now());
         //查询状态为待付款且创建时间超过15min的订单
@@ -39,7 +39,7 @@ public class OrderTask {
         });
     }
 
-    @Scheduled(cron = "0 0 1 * * ? ")
+//    @Scheduled(cron = "0 0 1 * * ? ")
     public void handleDeliverInProgress() {
         log.info("定时处理处于派送中的订单：{}", LocalDateTime.now());
         //查询状态为派送中且创建时间在00点之前的前一天订单
