@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDate;
 
 @RestController
@@ -85,5 +87,16 @@ public class reportController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
         SalesTop10ReportVO salesTop10ReportVO = reportService.top10(begin, end);
         return Result.success(salesTop10ReportVO);
+    }
+
+
+    /**
+     * 导出Excel接口
+     * @param response
+     */
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) throws IOException {
+        log.info("导出Excel");
+        reportService.exportBusinessData(response);
     }
 }
